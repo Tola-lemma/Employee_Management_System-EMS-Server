@@ -1,0 +1,32 @@
+{
+  "name": "employee_management_system-ems-server",
+  "version": "1.0.0",
+  "description": "Employee Managenet System Project",
+  "main": "index.js",
+  "scripts": {
+    "start": "supervisor index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tola-lemma/Employee_Management_System-EMS-Server.git"
+  },
+  "keywords": [
+    "Employee",
+    "Management",
+    "System",
+    "EMS"
+  ],
+  "author": "Tola  And Nathinael",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tola-lemma/Employee_Management_System-EMS-Server/issues"
+  },
+  "homepage": "https://github.com/Tola-lemma/Employee_Management_System-EMS-Server#readme",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "pg": "^8.13.1",
+    "supervisor": "^0.12.0"
+  }
+}
