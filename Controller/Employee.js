@@ -207,3 +207,117 @@ exports.createEmployee =[ upload.single("profile_picture"),
         .json({ message: "Error creating employee.", error: error.message });
     }
   }];
+//get all employees or a specific employee
+exports.getEmployee = async (req, res) => {
+  const { employee_id } = req.params;
+
+  try {
+    const query = `
+      SELECT e.employee_id, e.first_name, e.last_name, e.email, e.phone, 
+             e.date_of_birth, e.address, e.date_joined, e.status, 
+             d.department_name as department, r.role_name as role
+      FROM Employees e
+      LEFT JOIN Departments d ON e.department_id = d.department_id
+      LEFT JOIN Roles r ON e.role_id = r.role_id
+      ${employee_id ? "WHERE e.employee_id = $1" : ""}`;
+    
+    const values = employee_id ? [employee_id] : [];
+
+    const result = await db.query(query, values);
+
+    if (employee_id && result.rows.length === 0) {
+      return res.status(404).send({ message: "Employee not found." });
+    }
+
+    res.status(200).json({
+      message: employee_id
+        ? "Employee retrieved successfully!"
+        : "All employees retrieved successfully!",
+      status: "success",
+      result: employee_id ? result.rows[0] : result.rows,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error retrieving employee(s).", error: error.message });
+  }
+};
+
+
+//update employee
+exports.updateEmployee = async (req, res) => {
+  const { employee_id } = req.params;
+  const updateFields = req.body; // Get only fields sent in the request body
+
+  try {
+    if (!employee_id) {
+      return res.status(400).send({ message: "Employee ID is required." });
+    }
+
+    // Build the dynamic UPDATE query
+    const setClauses = [];
+    const values = [];
+
+    let index = 1; // Start positional parameters at $1
+    for (const [field, value] of Object.entries(updateFields)) {
+      setClauses.push(`${field} = $${index}`);
+      values.push(value);
+      index++;
+    }
+
+    if (setClauses.length === 0) {
+      return res.status(400).send({ message: "No fields to update provided." });
+    }
+
+    const query = `
+      UPDATE Employees
+      SET ${setClauses.join(", ")}
+      WHERE employee_id = $${index}
+      RETURNING *`;
+
+    values.push(employee_id); // Add employee_id as the last parameter
+
+    const updatedEmployee = await db.query(query, values);
+
+    if (updatedEmployee.rows.length === 0) {
+      return res.status(404).send({ message: "Employee not found." });
+    }
+
+    res.status(200).json({
+      message: "Employee updated successfully!",
+      status: "success",
+      result: updatedEmployee.rows[0],
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating employee.", error: error.message });
+  }
+};
+
+
+  //delete employee
+  exports.deleteEmployee = async (req, res) => {
+    const { employee_id } = req.params;
+  
+    try {
+      if (!employee_id) {
+        return res.status(400).send({ message: "Employee ID is required." });
+      }
+  
+      const query = "DELETE FROM Employees WHERE employee_id = $1 RETURNING *";
+      const deletedEmployee = await db.query(query, [employee_id]);
+  
+      if (deletedEmployee.rows.length === 0) {
+        return res.status(404).send({ message: "Employee not found." });
+      }
+  
+      res.status(200).json({
+        message: "Employee deleted successfully!",
+        status: "success",
+        result: deletedEmployee.rows[0],
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error deleting employee.", error: error.message });
+    }
+  };
+  
