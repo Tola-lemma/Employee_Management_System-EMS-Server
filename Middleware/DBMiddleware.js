@@ -1,11 +1,15 @@
 const db = require('../Database/connection');
-// const createEmployeeTable = require('../../...')
+const createDepartmentTable = require('../Migrations/DepartmentTable');
+const createEmployeeTable = require('../Migrations/EmployeeTable');
+const createRolesTable = require('../Migrations/RolesTable');
 const runDBMigration = async ()=>{
       console.log('BEGIN DB MIGRATION');
       const client = await db.connect();
       try {
             await client.query('BEGIN');
-            // await client.query(createEmployeeTable); //Example like this
+            await client.query(createDepartmentTable); 
+            await client.query(createRolesTable); 
+            await client.query(createEmployeeTable); 
             await client.query('COMMIT');
 
             console.log("END MIGRATION");
