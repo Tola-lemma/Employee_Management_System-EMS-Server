@@ -19,7 +19,7 @@ app.get('/',(req,res)=>{
       res.send("Welcome to Employee Management System API")
 })
 //API endpoint hanler
-// app.use('/',require('./.../...'))
+app.use('/',require('./Route/route'))
 
 // Custom 404 Error Handler for invalid routes of EMS
 app.use((req, res) => {
