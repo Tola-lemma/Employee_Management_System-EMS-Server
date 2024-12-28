@@ -16,7 +16,10 @@ router.delete('/roles/:role_id',roleController.deleteRole)
 
 // Employee 
 const employeeController = require('../Controller/Employee')
-router.post('/employee',employeeController.createEmployee)
+router.post('/employees',employeeController.createEmployee)
+router.get("/employees/:employee_id?", employeeController.getEmployee);
+router.put("/employees/:employee_id", employeeController.updateEmployee);
+router.delete("/employees/:employee_id", employeeController.deleteEmployee);
 
 
 
