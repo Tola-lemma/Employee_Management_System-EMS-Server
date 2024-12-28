@@ -9,7 +9,10 @@ router.put('/departments/:department_id', departmentController.updateDepartment)
 router.delete('/departments/:department_id',departmentController.deleteDepartment)
 // Role 
 const roleController = require('../Controller/Role')
-router.post('/role',roleController.createRole)
+router.post('/roles',roleController.createRole)
+router.get('/roles/:role_id?',roleController.getRoles)
+router.put('/roles/:role_id',roleController.updateRole)
+router.delete('/roles/:role_id',roleController.deleteRole)
 
 // Employee 
 const employeeController = require('../Controller/Employee')
