@@ -1,5 +1,4 @@
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const nodemailer = require("nodemailer");
 const validator = require("validator"); 
@@ -166,9 +165,26 @@ exports.createEmployee =[ upload.single("profile_picture"),
                 font-size: 14px;
                 color: #777;
               }
+                 .header {
+                      background-color: #007bff;
+                      color: #fff;
+                      padding: 20px;
+                      text-align: center;
+                    }
+                  .logo {
+                      width: 100px;
+                      height: 100px;
+                      object-fit: contain;
+                      margin: 0 auto;
+                      display: block;
+                    }
             </style>
           </head>
           <body>
+          <div class="header">
+              <img src="https://st2.depositphotos.com/1768926/7866/v/450/depositphotos_78666192-stock-illustration-a-logo-sample-logo-for.jpg" alt="Company Logo" class="logo">
+              <h1>Company Name.</h1>
+           </div>
             <div class="container">
               <h1>Welcome to the Company!</h1>
               <div class="content">
