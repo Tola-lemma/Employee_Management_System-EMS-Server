@@ -244,13 +244,18 @@ exports.getEmployee = async (req, res) => {
     if (employee_id && result.rows.length === 0) {
       return res.status(404).send({ message: "Employee not found." });
     }
-
+    //date format
+    const employees = result.rows.map(employee => ({
+      ...employee,
+      date_joined: new Date(employee.date_joined).toLocaleDateString("en-GB"),
+      date_of_birth: new Date(employee.date_of_birth).toLocaleDateString("en-GB"),
+    }));
     res.status(200).json({
       message: employee_id
         ? "Employee retrieved successfully!"
         : "All employees retrieved successfully!",
       status: "success",
-      result: employee_id ? result.rows[0] : result.rows,
+      result: employee_id ? result.rows[0] : employees,
     });
   } catch (error) {
     console.error(error);
@@ -292,11 +297,45 @@ exports.updateEmployee = async (req, res) => {
 
     values.push(employee_id); // Add employee_id as the last parameter
 
-    const updatedEmployee = await db.query(query, values);
+     // Check if the `department_id` is being updated
+     const currentDepartmentQuery = `
+     SELECT department_id, date_joined FROM Employees WHERE employee_id = $1
+   `;
+   const currentDepartmentResult = await db.query(currentDepartmentQuery, [employee_id]);
 
-    if (updatedEmployee.rows.length === 0) {
-      return res.status(404).send({ message: "Employee not found." });
-    }
+   if (currentDepartmentResult.rows.length === 0) {
+     return res.status(404).send({ message: "Employee not found." });
+   }
+
+   const currentDepartment = currentDepartmentResult.rows[0].department_id;
+   const dateJoined = currentDepartmentResult.rows[0].date_joined;
+   const newDepartmentId = updateFields.department_id;
+
+   const updatedEmployee = await db.query(query, values);
+
+   if (updatedEmployee.rows.length === 0) {
+     return res.status(404).send({ message: "Employee not found." });
+   }
+
+   // If `department_id` has changed, update the history
+   if (newDepartmentId && newDepartmentId !== currentDepartment) {
+     const today = new Date().toISOString().split("T")[0];
+
+     // Log the new department assignment
+     const logHistoryQuery = `
+       INSERT INTO EmployeeDepartmentHistory (employee_id, department_id, start_date)
+       VALUES ($1, $2, $3);
+     `;
+     await db.query(logHistoryQuery, [employee_id, currentDepartment, dateJoined]);
+
+     // End the previous department assignment
+     const endHistoryQuery = `
+       UPDATE EmployeeDepartmentHistory
+       SET end_date = $1
+       WHERE employee_id = $2 AND department_id = $3 AND end_date IS NULL;
+     `;
+     await db.query(endHistoryQuery, [today, employee_id, currentDepartment]);
+   }
 
     res.status(200).json({
       message: "Employee updated successfully!",
