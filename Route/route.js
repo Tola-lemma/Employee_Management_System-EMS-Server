@@ -16,15 +16,18 @@ router.delete('/roles/:role_id',roleController.deleteRole)
 
 // Employee 
 const employeeController = require('../Controller/Employee')
+const EmpDepartHistory = require('../Controller/EmpDepartHistory')
 router.post('/employees',employeeController.createEmployee)
 router.get("/employees/:employee_id?", employeeController.getEmployee);
 router.put("/employees/:employee_id", employeeController.updateEmployee);
 router.delete("/employees/:employee_id", employeeController.deleteEmployee);
+router.get("/employees/department-history/:employee_id", EmpDepartHistory.getEmployeeDepartmentHistory);
 
 //Auth
 const authController = require('../Controller/Auth/Login')
 const passwordReset = require('../Controller/Auth/PasswordReset');
 const changePassword  = require('../Controller/Auth/ChangePassword');
+const { getEmployeeDepartmentHistory } = require('../Controller/EmpDepartHistory');
 router.post('/login',authController.loginEmployee)
 router.post('/password-reset/:employee_id',passwordReset.resetPassword)
 router.put('/change-password/:employee_id',changePassword.changePassword)
