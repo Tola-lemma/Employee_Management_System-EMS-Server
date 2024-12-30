@@ -24,9 +24,22 @@
   },
   "homepage": "https://github.com/Tola-lemma/Employee_Management_System-EMS-Server#readme",
   "dependencies": {
+    "bash": "^0.0.1",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
+    "employee_management_system-ems-server": "file:",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "knex": "^3.1.0",
     "pg": "^8.13.1",
+    "sequelize": "^6.37.5",
+    "sequelize-cli": "^6.6.2",
     "supervisor": "^0.12.0"
+  },
+  "devDependencies": {
+    "knex-cli": "^1.0.1",
+    "nodemon": "^3.1.9"
   }
 }
