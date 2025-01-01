@@ -265,7 +265,17 @@ exports.getEmployee = async (req, res) => {
 
 
 //update employee
-exports.updateEmployee = async (req, res) => {
+exports.updateEmployee = [ upload.single("profile_picture"),
+  (err, req, res, next) => {
+    if (
+      err instanceof multer.MulterError ||
+      err.message.includes("Invalid file type")
+    ) {
+      return res.status(400).json({ message: err.message });
+    }
+    next();
+  },
+  async (req, res) => {
   const { employee_id } = req.params;
   const updateFields = req.body; // Get only fields sent in the request body
 
@@ -273,7 +283,9 @@ exports.updateEmployee = async (req, res) => {
     if (!employee_id) {
       return res.status(400).send({ message: "Employee ID is required." });
     }
-
+    if (req.file) {
+      updateFields.profile_picture = req.file.buffer; // Store the file data in memory
+    }
     // Build the dynamic UPDATE query
     const setClauses = [];
     const values = [];
@@ -346,7 +358,7 @@ exports.updateEmployee = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Error updating employee.", error: error.message });
   }
-};
+}]
 
 
   //delete employee
