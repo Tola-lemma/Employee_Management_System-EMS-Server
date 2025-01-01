@@ -1,8 +1,10 @@
 const express = require('express');
+const cors = require('cors');
 require('dotenv').config();
 const runDBMigrations = require('./Middleware/DBMiddleware')
 const PORT = process.env.PORT || 3000;
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 //db
@@ -19,7 +21,7 @@ app.get('/',(req,res)=>{
       res.send("Welcome to Employee Management System API")
 })
 //API endpoint hanler
-// app.use('/',require('./.../...'))
+app.use('/',require('./Route/route'))
 
 // Custom 404 Error Handler for invalid routes of EMS
 app.use((req, res) => {
