@@ -18,17 +18,41 @@ exports.createPerformance = async (req, res) => {
 // Read
 exports.getPerformance = async (req, res) => {
   const { performance_id } = req.params;
+
   try {
-    const query = performance_id
-      ? `SELECT * FROM Performance WHERE performance_id = $1`
-      : `SELECT * FROM Performance`;
-    const performance = await db.query(query, performance_id ? [performance_id] : []);
-    res.status(200).json({ message: "Performance fetched successfully!", result: performance.rows });
+    let query = `
+      SELECT 
+        p.performance_id, 
+        p.review, 
+        p.rating, 
+        e.first_name || ' ' || e.last_name AS employee_name 
+      FROM Performance p
+      LEFT JOIN Employees e ON p.employee_id = e.employee_id
+    `;
+    const values = [];
+
+    if (performance_id) {
+      query += " WHERE p.performance_id = $1";
+      values.push(performance_id);
+    }
+
+    const performance = await db.query(query, values);
+
+    if (performance_id && performance.rows.length === 0) {
+      return res.status(404).send({ message: "Performance record not found." });
+    }
+
+    res.status(200).json({
+      message: "Performance records retrieved successfully.",
+      status: "success",
+      result: performance.rows,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error fetching performance records.", error: error.message });
+    res.status(500).json({ message: "Error retrieving performance records.", error: error.message });
   }
 };
+
 
 // Update
 exports.updatePerformance = async (req, res) => {

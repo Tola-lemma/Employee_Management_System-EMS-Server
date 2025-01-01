@@ -18,15 +18,38 @@ exports.createAttendance = async (req, res) => {
 // Read
 exports.getAttendance = async (req, res) => {
   const { attendance_id } = req.params;
+
   try {
-    const query = attendance_id
-      ? `SELECT * FROM Attendance WHERE attendance_id = $1`
-      : `SELECT * FROM Attendance`;
-    const attendance = await db.query(query, attendance_id ? [attendance_id] : []);
-    res.status(200).json({ message: "Attendance fetched successfully!", result: attendance.rows });
+    let query = `
+      SELECT 
+        a.attendance_id, 
+        a.date, 
+        a.status, 
+        e.first_name || ' ' || e.last_name AS employee_name 
+      FROM Attendance a
+      LEFT JOIN Employees e ON a.employee_id = e.employee_id
+    `;
+    const values = [];
+
+    if (attendance_id) {
+      query += " WHERE a.attendance_id = $1";
+      values.push(attendance_id);
+    }
+
+    const attendance = await db.query(query, values);
+
+    if (attendance_id && attendance.rows.length === 0) {
+      return res.status(404).send({ message: "Attendance record not found." });
+    }
+
+    res.status(200).json({
+      message: "Attendance records retrieved successfully.",
+      status: "success",
+      result: attendance.rows,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error fetching attendance records.", error: error.message });
+    res.status(500).json({ message: "Error retrieving attendance.", error: error.message });
   }
 };
 

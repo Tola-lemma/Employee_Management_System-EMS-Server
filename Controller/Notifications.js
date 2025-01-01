@@ -18,17 +18,41 @@ exports.createNotification = async (req, res) => {
 // Read
 exports.getNotifications = async (req, res) => {
   const { notification_id } = req.params;
+
   try {
-    const query = notification_id
-      ? `SELECT * FROM Notifications WHERE notification_id = $1`
-      : `SELECT * FROM Notifications`;
-    const notifications = await db.query(query, notification_id ? [notification_id] : []);
-    res.status(200).json({ message: "Notifications fetched successfully!", result: notifications.rows });
+    let query = `
+      SELECT 
+        n.notification_id, 
+        n.message, 
+        n.date, 
+        e.first_name || ' ' || e.last_name AS employee_name 
+      FROM Notifications n
+      LEFT JOIN Employees e ON n.employee_id = e.employee_id
+    `;
+    const values = [];
+
+    if (notification_id) {
+      query += " WHERE n.notification_id = $1";
+      values.push(notification_id);
+    }
+
+    const notifications = await db.query(query, values);
+
+    if (notification_id && notifications.rows.length === 0) {
+      return res.status(404).send({ message: "Notification not found." });
+    }
+
+    res.status(200).json({
+      message: "Notifications retrieved successfully.",
+      status: "success",
+      result: notifications.rows,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error fetching notifications.", error: error.message });
+    res.status(500).json({ message: "Error retrieving notifications.", error: error.message });
   }
 };
+
 
 // Update
 exports.markNotificationAsRead = async (req, res) => {
