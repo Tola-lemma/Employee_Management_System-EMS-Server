@@ -245,11 +245,18 @@ exports.getEmployee = async (req, res) => {
       return res.status(404).send({ message: "Employee not found." });
     }
     //date format
-    const employees = result.rows.map(employee => ({
-      ...employee,
-      date_joined: new Date(employee.date_joined).toLocaleDateString("en-GB"),
-      date_of_birth: new Date(employee.date_of_birth).toLocaleDateString("en-GB"),
-    }));
+    const employees = result.rows.map((employee) => {
+      const profilePictureBase64 = employee.profile_picture
+        ? `data:image/jpeg;base64,${employee.profile_picture.toString("base64")}`
+        : null;
+    
+      return {
+        ...employee,
+        date_joined: new Date(employee.date_joined).toLocaleDateString("en-GB"),
+        date_of_birth: new Date(employee.date_of_birth).toLocaleDateString("en-GB"),
+        profile_picture: profilePictureBase64, // Add Base64 image to the response
+      };
+    });
     res.status(200).json({
       message: employee_id
         ? "Employee retrieved successfully!"
