@@ -252,8 +252,8 @@ exports.getEmployee = async (req, res) => {
     
       return {
         ...employee,
-        date_joined: new Date(employee.date_joined).toLocaleDateString("en-GB"),
-        date_of_birth: new Date(employee.date_of_birth).toLocaleDateString("en-GB"),
+        date_joined: new Date(employee.date_joined).toLocaleDateString("en-US"),
+        date_of_birth: new Date(employee.date_of_birth).toLocaleDateString("en-US"),
         profile_picture: profilePictureBase64, // Add Base64 image to the response
       };
     });
