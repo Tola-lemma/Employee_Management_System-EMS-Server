@@ -94,6 +94,10 @@ exports.createEmployee =[ upload.single("profile_picture"),
       if (!validator.isEmail(email)) {
         return res.status(400).send({ message: "Invalid email address" });
       }
+      const EmailDuplicate = await db.query(`SELECT * FROM Employees WHERE email = $1`, [email]);
+      if (EmailDuplicate.rows.length > 0) {
+        return res.status(400).send({ message: "Email already exists." });
+      }
       const profile_picture = req.file ? req.file.buffer : null;
       const password = generateSecurePassword();
       const hashedPassword = await bcrypt.hash(password, 10);
