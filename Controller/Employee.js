@@ -94,6 +94,10 @@ exports.createEmployee =[ upload.single("profile_picture"),
       if (!validator.isEmail(email)) {
         return res.status(400).send({ message: "Invalid email address" });
       }
+      const EmailDuplicate = await db.query(`SELECT * FROM Employees WHERE email = $1`, [email]);
+      if (EmailDuplicate.rows.length > 0) {
+        return res.status(400).send({ message: "Email already exists." });
+      }
       const profile_picture = req.file ? req.file.buffer : null;
       const password = generateSecurePassword();
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -231,7 +235,7 @@ exports.getEmployee = async (req, res) => {
     const query = `
       SELECT e.employee_id, e.first_name, e.last_name, e.email, e.phone, 
              e.date_of_birth, e.address, e.date_joined, e.status,e.profile_picture, 
-             d.department_name as department, r.role_name as role, e.role_id, e.department_id
+             d.department_name as department, r.role_name as role, e.role_id, e.department_id, e.bad_login_attempts
       FROM Employees e
       LEFT JOIN Departments d ON e.department_id = d.department_id
       LEFT JOIN Roles r ON e.role_id = r.role_id
@@ -252,8 +256,8 @@ exports.getEmployee = async (req, res) => {
     
       return {
         ...employee,
-        date_joined: new Date(employee.date_joined).toLocaleDateString("en-GB"),
-        date_of_birth: new Date(employee.date_of_birth).toLocaleDateString("en-GB"),
+        date_joined: new Date(employee.date_joined).toLocaleDateString("en-US"),
+        date_of_birth: new Date(employee.date_of_birth).toLocaleDateString("en-US"),
         profile_picture: profilePictureBase64, // Add Base64 image to the response
       };
     });
