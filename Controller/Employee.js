@@ -234,6 +234,7 @@ exports.getEmployee = async (req, res) => {
              d.department_name as department, r.role_name as role
       FROM Employees e
       LEFT JOIN Departments d ON e.department_id = d.department_id
+      LEFT JOIN Tasks t ON e.task_id = t.task_id
       LEFT JOIN Roles r ON e.role_id = r.role_id
       LEFT JOIN Tasks t ON e.task_id = t.task_id
       ${employee_id ? "WHERE e.employee_id = $1" : ""}`;
