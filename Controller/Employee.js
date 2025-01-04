@@ -94,6 +94,10 @@ exports.createEmployee =[ upload.single("profile_picture"),
       if (!validator.isEmail(email)) {
         return res.status(400).send({ message: "Invalid email address" });
       }
+      const EmailDuplicate = await db.query(`SELECT * FROM Employees WHERE email = $1`, [email]);
+      if (EmailDuplicate.rows.length > 0) {
+        return res.status(400).send({ message: "Email already exists." });
+      }
       const profile_picture = req.file ? req.file.buffer : null;
       const password = generateSecurePassword();
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -230,13 +234,11 @@ exports.getEmployee = async (req, res) => {
   try {
     const query = `
       SELECT e.employee_id, e.first_name, e.last_name, e.email, e.phone, 
-             e.date_of_birth, e.address, e.date_joined, e.status, 
-             d.department_name as department, r.role_name as role
+             e.date_of_birth, e.address, e.date_joined, e.status,e.profile_picture, 
+             d.department_name as department, r.role_name as role, e.role_id, e.department_id, e.bad_login_attempts
       FROM Employees e
       LEFT JOIN Departments d ON e.department_id = d.department_id
-      LEFT JOIN Tasks t ON e.task_id = t.task_id
       LEFT JOIN Roles r ON e.role_id = r.role_id
-      LEFT JOIN Tasks t ON e.task_id = t.task_id
       ${employee_id ? "WHERE e.employee_id = $1" : ""}`;
     
     const values = employee_id ? [employee_id] : [];
@@ -247,11 +249,18 @@ exports.getEmployee = async (req, res) => {
       return res.status(404).send({ message: "Employee not found." });
     }
     //date format
-    const employees = result.rows.map(employee => ({
-      ...employee,
-      date_joined: new Date(employee.date_joined).toLocaleDateString("en-GB"),
-      date_of_birth: new Date(employee.date_of_birth).toLocaleDateString("en-GB"),
-    }));
+    const employees = result.rows.map((employee) => {
+      const profilePictureBase64 = employee.profile_picture
+        ? `data:image/jpeg;base64,${employee.profile_picture.toString("base64")}`
+        : null;
+    
+      return {
+        ...employee,
+        date_joined: new Date(employee.date_joined).toLocaleDateString("en-US"),
+        date_of_birth: new Date(employee.date_of_birth).toLocaleDateString("en-US"),
+        profile_picture: profilePictureBase64, // Add Base64 image to the response
+      };
+    });
     res.status(200).json({
       message: employee_id
         ? "Employee retrieved successfully!"
@@ -267,7 +276,17 @@ exports.getEmployee = async (req, res) => {
 
 
 //update employee
-exports.updateEmployee = async (req, res) => {
+exports.updateEmployee = [ upload.single("profile_picture"),
+  (err, req, res, next) => {
+    if (
+      err instanceof multer.MulterError ||
+      err.message.includes("Invalid file type")
+    ) {
+      return res.status(400).json({ message: err.message });
+    }
+    next();
+  },
+  async (req, res) => {
   const { employee_id } = req.params;
   const updateFields = req.body; // Get only fields sent in the request body
 
@@ -275,7 +294,9 @@ exports.updateEmployee = async (req, res) => {
     if (!employee_id) {
       return res.status(400).send({ message: "Employee ID is required." });
     }
-
+    if (req.file) {
+      updateFields.profile_picture = req.file.buffer; // Store the file data in memory
+    }
     // Build the dynamic UPDATE query
     const setClauses = [];
     const values = [];
@@ -348,7 +369,7 @@ exports.updateEmployee = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Error updating employee.", error: error.message });
   }
-};
+}]
 
 
   //delete employee

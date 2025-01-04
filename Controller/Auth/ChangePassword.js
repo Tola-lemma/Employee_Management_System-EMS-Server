@@ -36,7 +36,7 @@ exports.changePassword = async (req, res) => {
     // Update the password in the database
     const updateQuery = `
       UPDATE Employees 
-      SET password = $1 
+      SET password = $1 ,bad_login_attempts = 0, is_locked = FALSE, must_change_password = FALSE
       WHERE employee_id = $2 
       RETURNING employee_id, first_name, last_name
     `;
