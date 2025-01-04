@@ -47,6 +47,26 @@ router.post("/notifications", notificationsController.createNotification);
 router.get("/notifications/:notification_id?", notificationsController.getNotifications);
 router.put("/notifications/:notification_id", notificationsController.markNotificationAsRead);
 router.delete("/notifications/:notification_id", notificationsController.deleteNotification);
+// Audit
+const auditController = require('../Controller/Audit');
+router.post('/audit', auditController.createAuditLog);
+router.get('/audit/:audit_id?', auditController.getAuditLogs);
+router.delete('/audit/:audit_id', auditController.deleteAuditLog);
+
+// Leave
+const leaveController = require('../Controller/Leave');
+router.post('/leave', leaveController.createLeaveRequest);
+router.get('/leave/:leave_id?', leaveController.getLeaveRequests);
+router.put('/leave/:leave_id', leaveController.updateLeaveRequest);
+router.delete('/leave/:leave_id', leaveController.deleteLeaveRequest);
+
+// Gamifications
+const gamificationsController = require('../Controller/Gamifications');
+router.post('/gamifications', gamificationsController.createGamification);
+router.get('/gamifications/:gamification_id?', gamificationsController.getGamifications);
+router.put('/gamifications/:gamification_id', gamificationsController.updateGamification);
+router.delete('/gamifications/:gamification_id', gamificationsController.deleteGamification);
+
 //Auth
 const authController = require('../Controller/Auth/Login')
 const passwordReset = require('../Controller/Auth/PasswordReset');
