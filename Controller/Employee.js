@@ -248,26 +248,46 @@ exports.getEmployee = async (req, res) => {
     if (employee_id && result.rows.length === 0) {
       return res.status(404).send({ message: "Employee not found." });
     }
-    //date format
-    const employees = result.rows.map((employee) => {
+  
+    let formattedResult;
+    // If `employee_id` is provided, format only `result.rows[0]`
+    if (employee_id) {
+      const employee = result.rows[0];
       const profilePictureBase64 = employee.profile_picture
         ? `data:image/jpeg;base64,${employee.profile_picture.toString("base64")}`
         : null;
     
-      return {
+      formattedResult = {
         ...employee,
         date_joined: new Date(employee.date_joined).toLocaleDateString("en-US"),
         date_of_birth: new Date(employee.date_of_birth).toLocaleDateString("en-US"),
-        profile_picture: profilePictureBase64, // Add Base64 image to the response
+        profile_picture: profilePictureBase64, // Format profile picture
       };
-    });
+    } else {
+      // Otherwise, format all employees as before
+      formattedResult = result.rows.map((employee) => {
+        const profilePictureBase64 = employee.profile_picture
+          ? `data:image/jpeg;base64,${employee.profile_picture.toString("base64")}`
+          : null;
+    
+        return {
+          ...employee,
+          date_joined: new Date(employee.date_joined).toLocaleDateString("en-US"),
+          date_of_birth: new Date(employee.date_of_birth).toLocaleDateString("en-US"),
+          profile_picture: profilePictureBase64, // Format profile picture
+        };
+      });
+    }
+    
+    // Send the response
     res.status(200).json({
       message: employee_id
         ? "Employee retrieved successfully!"
         : "All employees retrieved successfully!",
       status: "success",
-      result: employee_id ? result.rows[0] : employees,
+      result: formattedResult,
     });
+    
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error retrieving employee(s).", error: error.message });
