@@ -21,15 +21,16 @@ exports.getPerformance = async (req, res) => {
 
   try {
     let query = `
-      SELECT 
-        p.performance_id, 
-        p.review_date, 
-        p.score, 
-        e.first_name || ' ' || e.last_name AS employee_name 
-      FROM Performance p
-      LEFT JOIN Employees e ON p.employee_id = e.employee_id
-    `;
-    const values = [];
+    SELECT 
+      p.performance_id, 
+      p.review_date, 
+      p.score, 
+      p.feedback,
+      e.first_name || ' ' || e.last_name AS employee_name 
+    FROM Performance p
+    LEFT JOIN Employees e ON p.employee_id = e.employee_id
+  `;
+  const values = [];
 
     if (performance_id) {
       query += " WHERE p.performance_id = $1";
