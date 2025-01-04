@@ -23,8 +23,8 @@ exports.getPerformance = async (req, res) => {
     let query = `
       SELECT 
         p.performance_id, 
-        p.review, 
-        p.rating, 
+        p.review_date, 
+        p.score, 
         e.first_name || ' ' || e.last_name AS employee_name 
       FROM Performance p
       LEFT JOIN Employees e ON p.employee_id = e.employee_id
