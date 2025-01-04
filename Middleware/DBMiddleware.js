@@ -3,6 +3,10 @@ const createDepartmentTable = require('../Migrations/DepartmentTable');
 const createDepartmentHistoryTable = require('../Migrations/EmployeeDepartmentHistoryTable');
 const createEmployeeTable = require('../Migrations/EmployeeTable');
 const createRolesTable = require('../Migrations/RolesTable');
+const createAttendanceTable = require('../Migrations/AttendanceTable');
+const createPerformanceTable = require('../Migrations/PerformanceTable');
+const createTasksTable = require('../Migrations/TasksTable');
+const createNotificationsTable = require('../Migrations/NotificationsTable');
 const runDBMigration = async ()=>{
       console.log('BEGIN DB MIGRATION');
       const client = await db.connect();
@@ -12,6 +16,10 @@ const runDBMigration = async ()=>{
             await client.query(createRolesTable); 
             await client.query(createEmployeeTable); 
             await client.query(createDepartmentHistoryTable); 
+            await client.query(createAttendanceTable);
+            await client.query(createPerformanceTable);
+            await client.query(createTasksTable);
+            await client.query(createNotificationsTable);
             await client.query('COMMIT');
 
             console.log("END MIGRATION");
