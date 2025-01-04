@@ -13,7 +13,7 @@ exports.loginEmployee = async (req, res) => {
     }
 
     // Query to fetch the employee by email
-    const query = ` SELECT e.employee_id, e.password, e.bad_login_attempts, e.is_locked, r.role_name as role
+    const query = ` SELECT e.employee_id, e.password, e.bad_login_attempts,e.must_change_password, e.is_locked, r.role_name as role
       FROM Employees e
       LEFT JOIN Roles r ON e.role_id = r.role_id
       WHERE e.email = $1`;
@@ -79,6 +79,7 @@ exports.loginEmployee = async (req, res) => {
       message: "Login successful.",
       status: "success",
       token,
+      user:{must_change_password: employee.must_change_password},
     });
   } catch (error) {
     console.error(error);
