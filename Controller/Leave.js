@@ -103,7 +103,7 @@ exports.updateLeaveRequest = async (req, res) => {
         end_date = COALESCE($2, end_date),
         reason = COALESCE($3, reason),
         status = COALESCE($4, status)
-      WHERE leave_id = $4
+      WHERE leave_id = $5
       RETURNING *`;
     const updatedLeaveRequest = await db.query(query, [start_date, end_date, reason,status, leave_id]);  
     if (updatedLeaveRequest.rows.length === 0) {
