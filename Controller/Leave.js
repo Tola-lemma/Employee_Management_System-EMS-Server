@@ -93,20 +93,26 @@ exports.getLeaveRequests = async (req, res) => {
 // Update
 exports.updateLeaveRequest = async (req, res) => {
   const { leave_id } = req.params;
-  const { status } = req.body;
+  const { start_date, end_date, reason } = req.body;
   
   try {
     const query = `
       UPDATE Leave
-      SET status = $1
-      WHERE leave_id = $2 RETURNING *`;
-    const updatedLeaveRequest = await db.query(query, [status, leave_id]);
-
+      SET 
+        start_date = COALESCE($1, start_date),
+        end_date = COALESCE($2, end_date),
+        reason = COALESCE($3, reason)
+      WHERE leave_id = $4
+      RETURNING *`;
+    const updatedLeaveRequest = await db.query(query, [start_date, end_date, reason, leave_id]);  
     if (updatedLeaveRequest.rows.length === 0) {
       return res.status(404).send({ message: "Leave request not found." });
     }
-    
-    res.status(200).json({ message: "Leave request updated successfully!", result: updatedLeaveRequest.rows[0] });
+    res.status(200).json({
+      success: true,
+      message: "Leave request updated successfully",
+      data: updatedLeaveRequest.rows[0],
+    });  
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error updating leave request.", error: error.message });
