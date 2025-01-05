@@ -13,7 +13,8 @@ exports.loginEmployee = async (req, res) => {
     }
 
     // Query to fetch the employee by email
-    const query = ` SELECT e.employee_id, e.password, e.bad_login_attempts,e.must_change_password, e.is_locked, r.role_name as role
+    const query = ` SELECT e.employee_id, e.password, e.bad_login_attempts,e.must_change_password, e.is_locked, r.role_name as role,
+     e.first_name || ' ' || e.last_name AS employee_name 
       FROM Employees e
       LEFT JOIN Roles r ON e.role_id = r.role_id
       WHERE e.email = $1`;
@@ -70,7 +71,7 @@ exports.loginEmployee = async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { employee_id: employee.employee_id, email,  role: employee.role },
+      { employee_id: employee.employee_id, email,  role: employee.role,fullname:employee.employee_name },
       process.env.JWT_SECRET,
       { expiresIn: "8h" }
     );
