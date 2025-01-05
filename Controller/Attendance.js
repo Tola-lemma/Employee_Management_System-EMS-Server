@@ -28,7 +28,9 @@ exports.getAttendance = async (req, res) => {
       SELECT 
         a.attendance_id, 
         a.date, 
-        a.status, 
+        a.status,
+        a.check_in_time,
+        a.check_out_time, 
         e.first_name || ' ' || e.last_name AS employee_name 
       FROM Attendance a
       LEFT JOIN Employees e ON a.employee_id = e.employee_id
