@@ -9,4 +9,5 @@ CREATE TABLE IF NOT EXISTS Leave (
     created_at TIMESTAMP DEFAULT NOW()
 );
 `;
+
 module.exports = createLeaveTable;
