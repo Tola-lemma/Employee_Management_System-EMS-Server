@@ -101,7 +101,7 @@ exports.updateLeaveRequest = async (req, res) => {
       SET 
         start_date = COALESCE($1, start_date),
         end_date = COALESCE($2, end_date),
-        reason = COALESCE($3, reason)
+        reason = COALESCE($3, reason),
         status = COALESCE($4, status)
       WHERE leave_id = $4
       RETURNING *`;
