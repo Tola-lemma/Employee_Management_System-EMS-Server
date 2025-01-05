@@ -93,7 +93,7 @@ exports.getLeaveRequests = async (req, res) => {
 // Update
 exports.updateLeaveRequest = async (req, res) => {
   const { leave_id } = req.params;
-  const { start_date, end_date, reason } = req.body;
+  const { start_date, end_date, reason ,status} = req.body;
   
   try {
     const query = `
@@ -102,9 +102,10 @@ exports.updateLeaveRequest = async (req, res) => {
         start_date = COALESCE($1, start_date),
         end_date = COALESCE($2, end_date),
         reason = COALESCE($3, reason)
+        status = COALESCE($4, status)
       WHERE leave_id = $4
       RETURNING *`;
-    const updatedLeaveRequest = await db.query(query, [start_date, end_date, reason, leave_id]);  
+    const updatedLeaveRequest = await db.query(query, [start_date, end_date, reason,status, leave_id]);  
     if (updatedLeaveRequest.rows.length === 0) {
       return res.status(404).send({ message: "Leave request not found." });
     }
