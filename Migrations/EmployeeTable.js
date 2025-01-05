@@ -14,6 +14,8 @@ const createEmployeeTable =`CREATE TABLE IF NOT EXISTS Employees (
       bad_login_attempts INT DEFAULT 0,
       is_locked BOOLEAN DEFAULT FALSE,
       must_change_password BOOLEAN DEFAULT TRUE,
-      profile_picture BYTEA
+      profile_picture BYTEA,
+      total_leave INT DEFAULT 20,              
+      remaining_leave INT DEFAULT 20
   )`
   module.exports = createEmployeeTable;

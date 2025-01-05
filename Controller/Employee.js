@@ -235,6 +235,7 @@ exports.getEmployee = async (req, res) => {
     const query = `
       SELECT e.employee_id, e.first_name, e.last_name, e.email, e.phone, 
              e.date_of_birth, e.address, e.date_joined, e.status,e.profile_picture, 
+             e.remaining_leave ,e.total_leave,
              d.department_name as department, r.role_name as role, e.role_id, e.department_id, e.bad_login_attempts
       FROM Employees e
       LEFT JOIN Departments d ON e.department_id = d.department_id
