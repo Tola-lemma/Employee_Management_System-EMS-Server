@@ -7,7 +7,11 @@ exports.createAttendance = async (req, res) => {
     const query = `
       INSERT INTO Attendance (employee_id, date, status, check_in_time, check_out_time)
       VALUES ($1, $2, $3, $4, $5) RETURNING *`;
-    const attendance = await db.query(query, [employee_id, date, status, check_in_time, check_out_time]);
+      const empCheck = await db.query(`SELECT *FROM Employees WHERE employee_id = $1`,[employee_id])
+     if (empCheck.rows.length===0){
+        return res.status(404).json({message:"Employee Not Found"})
+      }
+   const attendance = await db.query(query, [employee_id, date, status, check_in_time, check_out_time]);
     res.status(201).json({ message: "Attendance record created successfully!", result: attendance.rows[0] });
   } catch (error) {
     console.error(error);
@@ -24,7 +28,9 @@ exports.getAttendance = async (req, res) => {
       SELECT 
         a.attendance_id, 
         a.date, 
-        a.status, 
+        a.status,
+        a.check_in_time,
+        a.check_out_time, 
         e.first_name || ' ' || e.last_name AS employee_name 
       FROM Attendance a
       LEFT JOIN Employees e ON a.employee_id = e.employee_id
