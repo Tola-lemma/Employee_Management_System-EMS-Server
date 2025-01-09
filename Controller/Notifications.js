@@ -7,6 +7,10 @@ exports.createNotification = async (req, res) => {
     const query = `
       INSERT INTO Notifications (employee_id, message, type)
       VALUES ($1, $2, $3) RETURNING *`;
+      const empCheck = await db.query(`SELECT * FROM Employees WHERE employee_id = $1`, [employee_id]);
+      if (empCheck.rows.length === 0) {
+        return res.status(404).json({ message: "Employee Not Found" });
+      }
     const notification = await db.query(query, [employee_id, message, type]);
     res.status(201).json({ message: "Notification created successfully!", result: notification.rows[0] });
   } catch (error) {
@@ -17,28 +21,30 @@ exports.createNotification = async (req, res) => {
 
 // Read
 exports.getNotifications = async (req, res) => {
-  const { notification_id } = req.params;
+  const { employee_id } = req.params;
 
   try {
     let query = `
       SELECT 
         n.notification_id, 
         n.message, 
-        n.date, 
+        n.type, 
+        n.created_at, 
+        n.updated_at, 
         e.first_name || ' ' || e.last_name AS employee_name 
       FROM Notifications n
       LEFT JOIN Employees e ON n.employee_id = e.employee_id
     `;
     const values = [];
 
-    if (notification_id) {
-      query += " WHERE n.notification_id = $1";
-      values.push(notification_id);
+    if (employee_id) {
+      query += " WHERE n.employee_id = $1";
+      values.push(employee_id);
     }
 
     const notifications = await db.query(query, values);
 
-    if (notification_id && notifications.rows.length === 0) {
+    if (employee_id && notifications.rows.length === 0) {
       return res.status(404).send({ message: "Notification not found." });
     }
 
@@ -60,7 +66,7 @@ exports.markNotificationAsRead = async (req, res) => {
   try {
     const query = `
       UPDATE Notifications
-      SET is_read = TRUE
+      SET is_read = TRUE, updated_at = NOW()
       WHERE notification_id = $1 RETURNING *`;
     const updatedNotification = await db.query(query, [notification_id]);
     if (updatedNotification.rows.length === 0) {
