@@ -44,7 +44,7 @@ router.delete("/tasks/:task_id", tasksController.deleteTask);
 //Notifications
 const notificationsController = require("../Controller/Notifications");
 router.post("/notifications", notificationsController.createNotification);
-router.get("/notifications/:notification_id?", notificationsController.getNotifications);
+router.get("/notifications/:employee_id?", notificationsController.getNotifications);
 router.put("/notifications/:notification_id", notificationsController.markNotificationAsRead);
 router.delete("/notifications/:notification_id", notificationsController.deleteNotification);
 // Audit
