@@ -31,6 +31,7 @@ exports.getNotifications = async (req, res) => {
         n.type, 
         n.created_at, 
         n.updated_at, 
+        n.is_read,
         e.first_name || ' ' || e.last_name AS employee_name 
       FROM Notifications n
       LEFT JOIN Employees e ON n.employee_id = e.employee_id
