@@ -3,13 +3,13 @@ const router = Router();
 const AuthMiddleware = require('../Middleware/AuthMiddleware')
 // department 
 const departmentController = require('../Controller/Department')
-router.post('/departments',AuthMiddleware, departmentController.createDepartment)
+router.post('/departments', departmentController.createDepartment)
 router.get('/departments/:department_id?',AuthMiddleware, departmentController.getDepartments) //get all departments or a specific department
 router.put('/departments/:department_id',AuthMiddleware, departmentController.updateDepartment)
 router.delete('/departments/:department_id',AuthMiddleware, departmentController.deleteDepartment)
 // Role 
 const roleController = require('../Controller/Role')
-router.post('/roles',AuthMiddleware,roleController.createRole)
+router.post('/roles',roleController.createRole)
 router.get('/roles/:role_id?',AuthMiddleware,roleController.getRoles)
 router.put('/roles/:role_id',AuthMiddleware,roleController.updateRole)
 router.delete('/roles/:role_id',AuthMiddleware,roleController.deleteRole)
