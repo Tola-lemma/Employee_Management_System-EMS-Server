@@ -10,8 +10,14 @@ exports.changePassword = async (req, res) => {
       return res.status(400).send({ message: "Both old and new passwords are required." });
     }
 
+    const passwordValidationRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
     if (new_password.length < 8) {
       return res.status(400).send({ message: "New password must be at least 8 characters long." });
+    }
+    if (!passwordValidationRegex.test(new_password)) {
+      return res.status(400).send({
+        message: "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+      });
     }
 
     // Fetch the current hashed password from the database
