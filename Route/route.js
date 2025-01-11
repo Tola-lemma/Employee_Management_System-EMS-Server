@@ -38,7 +38,7 @@ router.delete("/performance/:performance_id",AuthMiddleware, performanceControll
 //Tasks
 const tasksController = require("../Controller/Tasks");
 router.post("/tasks",AuthMiddleware, tasksController.createTask);
-router.get("/tasks/:task_id?",AuthMiddleware, tasksController.getTasks);
+router.get("/tasks/:employee_id?",AuthMiddleware, tasksController.getTasks);
 router.put("/tasks/:task_id", AuthMiddleware,tasksController.updateTask);
 router.delete("/tasks/:task_id",AuthMiddleware,tasksController.deleteTask);
 //Notifications
