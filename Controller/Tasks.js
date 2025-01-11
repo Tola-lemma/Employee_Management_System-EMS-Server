@@ -17,12 +17,21 @@ exports.createTask = async (req, res) => {
 
 // Read
 exports.getTasks = async (req, res) => {
-  const { task_id } = req.params;
+  const { employee_id } = req.params;
   try {
-    const query = task_id
-      ? `SELECT * FROM Tasks WHERE task_id = $1`
-      : `SELECT * FROM Tasks`;
-    const tasks = await db.query(query, task_id ? [task_id] : []);
+    const query = employee_id
+      ? `
+        SELECT t.task_id, t.task_description, t.due_date, t.status,
+               e.employee_id, e.first_name || ' ' || e.last_name AS fullName
+        FROM Tasks t
+        JOIN Employees e ON t.employee_id = e.employee_id
+        WHERE t.employee_id = $1`
+      : `
+        SELECT t.task_id, t.task_description, t.due_date, t.status,
+               e.employee_id, e.first_name || ' ' || e.last_name AS fullName
+        FROM Tasks t
+        JOIN Employees e ON t.employee_id = e.employee_id`;
+    const tasks = await db.query(query, employee_id ? [employee_id] : []);
     res.status(200).json({ message: "Tasks fetched successfully!", result: tasks.rows });
   } catch (error) {
     console.error(error);
@@ -33,13 +42,16 @@ exports.getTasks = async (req, res) => {
 // Update
 exports.updateTask = async (req, res) => {
   const { task_id } = req.params;
-  const { status } = req.body;
+  const { task_description, due_date, status } = req.body;
   try {
     const query = `
       UPDATE Tasks
-      SET status = $1
-      WHERE task_id = $2 RETURNING *`;
-    const updatedTask = await db.query(query, [status, task_id]);
+      SET 
+        task_description = COALESCE($1, task_description),
+        due_date = COALESCE($2, due_date),
+        status = COALESCE($3, status)
+      WHERE task_id = $4 RETURNING *`;
+    const updatedTask = await db.query(query, [task_description, due_date, status, task_id]);
     if (updatedTask.rows.length === 0) {
       return res.status(404).send({ message: "Task not found." });
     }
