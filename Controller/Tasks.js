@@ -2,18 +2,25 @@ const db = require("../Database/connection");
 
 // Create
 exports.createTask = async (req, res) => {
-  const { employee_id, task_description, due_date, status } = req.body;
-  try {
-    const query = `
-      INSERT INTO Tasks (employee_id, task_description, due_date, status)
-      VALUES ($1, $2, $3, $4) RETURNING *`;
-    const task = await db.query(query, [employee_id, task_description, due_date, status]);
-    res.status(201).json({ message: "Task created successfully!", result: task.rows[0] });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error creating task.", error: error.message });
-  }
+    const { title, description, assigned_to, due_date, status } = req.body;
+    try {
+        const query = `
+            INSERT INTO Tasks (title, description, employee_id, due_date, status)
+            VALUES ($1, $2, $3, $4, $5) RETURNING *`;
+        const result = await db.query(query, [title, description, assigned_to, due_date, status]);
+        res.status(201).json({
+            message: "Task created successfully!",
+            result: result.rows[0]
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Error creating task.",
+            error: error.message
+        });
+    }
 };
+
 
 // Read
 exports.getTasks = async (req, res) => {
