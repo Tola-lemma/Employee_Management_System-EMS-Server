@@ -199,7 +199,7 @@ exports.createEmployee =[ upload.single("profile_picture"),
                   <p>Password: <strong>${password}</strong></p>
                 </div>
                 <p>Please log in and change your password immediately for security reasons.</p>
-                <p><a href="http://localhost:3000"> Click Here<a/></p>
+                <p><a href="https://employee-management-system-ems-bwry.onrender.com/"> Click Here<a/></p>
                 <p>Best regards,</p>
                 <p>The HR Team</p>
               </div>
