@@ -19,17 +19,17 @@ const runDBMigration = async ()=>{
       console.log('BEGIN DB MIGRATION');
       const client = await db.connect();
 
-// const alterEmployeeTable = async () => {
-//     try {
-//         await db.query(`ALTER TABLE Employees ADD COLUMN IF NOT EXISTS office_id INT REFERENCES Offices(office_id) ON DELETE SET NULL`);
-//         await db.query(`UPDATE Employees SET office_id = 1`); // Set default office ID to 1 
-//        console.log("Alteration successful: office_id column added and updated.");
-//     } catch (error) {
-//         console.error("Error altering Employees table:", error);
-//     }
-// };
+const alterEmployeeTable = async () => {
+    try {
+        await db.query(`ALTER TABLE Employees ADD COLUMN IF NOT EXISTS office_id INT REFERENCES Offices(office_id) ON DELETE SET NULL`);
+        await db.query(`UPDATE Employees SET office_id = 1`); // Set default office ID to 1 
+       console.log("Alteration successful: office_id column added and updated.");
+    } catch (error) {
+        console.error("Error altering Employees table:", error);
+    }
+};
 
-// alterEmployeeTable();
+alterEmployeeTable();
 
       try {
             await client.query('BEGIN');
