@@ -76,4 +76,19 @@ router.post('/login',authController.loginEmployee)
 router.post('/password-reset/:employee_id',passwordReset.resetPassword)
 router.put('/change-password/:employee_id',changePassword.changePassword)
 
+//office
+const officeController = require('../Controller/OfficeController')
+router.post('/officies',officeController.createOffice)
+router.get('/officies',officeController.getOffices)
+router.put('/officies/:office_id',officeController.updateOffice)
+
+//Attendance V2
+const attendaceController2 = require('../Controller/AttendanceController')
+router.post('/attendance/checkin',attendaceController2.checkIn)
+router.post('/attendance/checkout',attendaceController2.checkOut)
+router.get('/attendance/v2/getall',attendaceController2.getAttendanceRecords)
+router.get('/attendance/v2/:employee_id',attendaceController2.getAttendanceRecordsByEmployee)
+//Weekly workHr
+router.get("/work/hr",attendaceController2.getAllWeeklyWorkHours)
+router.get("/work/hr/:employee_id",attendaceController2.getWeeklyWorkHoursByEmployee)
 module.exports = router

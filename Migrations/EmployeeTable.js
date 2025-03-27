@@ -6,6 +6,7 @@ const createEmployeeTable =`CREATE TABLE IF NOT EXISTS Employees (
       phone VARCHAR(15),
       department_id INT REFERENCES Departments(department_id) ON DELETE SET NULL,
       role_id INT REFERENCES Roles(role_id) ON DELETE SET NULL,
+      office_id INT REFERENCES Offices(id) ON DELETE SET NULL, -- Added office_id
       date_of_birth DATE,
       address TEXT,
       date_joined DATE NOT NULL,
