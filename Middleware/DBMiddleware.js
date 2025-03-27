@@ -29,7 +29,7 @@ const runDBMigration = async ()=>{
 //     }
 // };
 
-alterEmployeeTable();
+// alterEmployeeTable();
 
       try {
             await client.query('BEGIN');
